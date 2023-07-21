@@ -3,6 +3,7 @@ package com.codelab.sequencechecker.service;
 import com.codelab.sequencechecker.exception.SequenceException;
 import com.codelab.sequencechecker.model.Sequence;
 import com.codelab.sequencechecker.repository.SeqCheckerRepository;
+import com.sun.jdi.LongValue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -25,6 +26,7 @@ public class SequenceService {
     public SequenceService(SeqCheckerRepository seqChecker){
         this.seqRep= seqChecker;
     }
+
 
     /**
      * Add sequences in db
@@ -65,12 +67,13 @@ public class SequenceService {
 
             int sizeOfSeq=getAllSequences().size();
 
-
+            int availSeq=0;
             for(int i=0; i < sizeOfSeq; i++){
 
                 if( getAllSequences().get(i).getSequence().equals(sequence)){
 
                     log.info("JackPot1===> -----> "+getAllSequences().get(i).getSequence());
+                    getAllSequences().get(i).setTag((long) availSeq);
 
                     jackpot=new Sequence().setSequence(sequence);
 
@@ -140,6 +143,7 @@ public class SequenceService {
                                                int index,
                                                String sequence,
                                                List<Sequence> listSeq ){
+        int availSeq=0;
 
         String retrievedSeqRev=reverseInputSeq(allSequences.get(index).getSequence());
         String seqRev=reverseInputSeq(sequence);
@@ -151,7 +155,7 @@ public class SequenceService {
                 && allSeqReversed.equals(inputRev)) {
 
             if(!sequence.equals(allSequences.get(index).getSequence())){
-
+                allSequences.get(index).setTag((long) availSeq);
             listSeq.add(allSequences.get(index));
 
 
@@ -170,6 +174,7 @@ public class SequenceService {
     public List<Sequence> check4Sequence(String sequence) {
         List<Sequence> listSeq = new ArrayList<>();
 
+        int sum =0;
 
         try{
         List<Sequence> allSequences = getAllSequences();
@@ -181,8 +186,7 @@ public class SequenceService {
             listSeq.add(new Sequence().setSequence("NoEntryFound!"));
             return listSeq;
         }
-
-
+            int availSeq=0;
         for (int i = 0; i < allSequences.size(); i++) {
 
             if (!sequence.equals(allSequences.get(i).getSequence())) {// eliminate duplicated jackpot
@@ -192,6 +196,12 @@ public class SequenceService {
                         .equals(sequence.substring(0, bound))) {
 
                     log.info("-----4--->>" + allSequences.get(i));
+
+                    availSeq++;
+
+                    log.info("-4--->counted Sequences{}",availSeq);
+
+                    allSequences.get(i).setTag((long) availSeq);
 
                     listSeq.add(allSequences.get(i));
                 }
@@ -207,8 +217,11 @@ public class SequenceService {
 
             listSeq.add(new Sequence().setSequence("CheckDataEntry!"));
 
+            log.info("CheckDataEntry-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=->"+sum);
+
             return listSeq;
         }
+
     }
 
     /**
@@ -232,6 +245,7 @@ public class SequenceService {
             return listSeq;
         }
 
+            int availSeq=0;
         for (int i = 0; i < allSequences.size(); i++) {
             if (!sequence.equals(allSequences.get(i).getSequence())) {
             if (allSequences.get(i).getSequence().length() >= bound
@@ -239,8 +253,13 @@ public class SequenceService {
                     .equals(sequence.substring(0, bound))) {
 
                 log.info("-----3--->>" + allSequences.get(i));
+                availSeq++;
 
+                log.info("-3--->counted Sequences{}",availSeq);
+                allSequences.get(i).setTag((long) availSeq);
                 listSeq.add(allSequences.get(i));
+
+
             }
             reverseAllSequences(allSequences,bound,i,sequence,listSeq);
             removeDuplicates(listSeq);
@@ -276,7 +295,7 @@ public class SequenceService {
             listSeq.add(new Sequence().setSequence("NoEntryFound!"));
             return listSeq;
         }
-
+            int availSeq=0;
         for (int i = 0; i < allSequences.size(); i++) {
 
             if (!sequence.equals(allSequences.get(i).getSequence())) {
@@ -286,6 +305,9 @@ public class SequenceService {
                         .equals(sequence.substring(0, bound))) {
 
                     log.info("-----2--->>" + allSequences.get(i));
+                    availSeq++;
+                    allSequences.get(i).setTag((long) availSeq);
+                    log.info("-2--->counted Sequences {}",availSeq);
 
                     listSeq.add(allSequences.get(i));
                 }
@@ -324,6 +346,7 @@ public class SequenceService {
             return listSeq;
         }
 
+            int availSeq=0;
         for (int i = 0; i < allSequences.size(); i++) {
 
             if (!sequence.equals(allSequences.get(i).getSequence())) {
@@ -333,8 +356,13 @@ public class SequenceService {
                         .equals(sequence.substring(0, bound))) {
 
                     log.info("-----1--->>" + allSequences.get(i));
+                    availSeq++;
+                    allSequences.get(i).setTag((long) availSeq);
+                    log.info("-1--->counted Sequences {}",availSeq);
 
                     listSeq.add(allSequences.get(i));
+
+
                 }
 
                 reverseAllSequences(allSequences, bound, i, sequence, listSeq);
