@@ -327,7 +327,7 @@ public class SequenceService {
     }
 
     /**
-     * Checks 1 sequence
+     * Checks the 1st character in sequence
      * @param sequence
      * @return List<Sequence>
      */
@@ -347,7 +347,9 @@ public class SequenceService {
         }
 
             int availSeq=0;
+            int matchingIndex = 0;
         for (int i = 0; i < allSequences.size(); i++) {
+
 
             if (!sequence.equals(allSequences.get(i).getSequence())) {
 
@@ -355,9 +357,11 @@ public class SequenceService {
                         && allSequences.get(i).getSequence().substring(0, bound)
                         .equals(sequence.substring(0, bound))) {
 
-                    log.info("-----1--->>" + allSequences.get(i));
+                    matchingIndex=i;
+
+                    log.info("-----1st--->>" + allSequences.get(i));
                     availSeq++;
-                    allSequences.get(i).setTag((long) availSeq);
+
                     log.info("-1--->counted Sequences {}",availSeq);
 
                     listSeq.add(allSequences.get(i));
@@ -371,6 +375,8 @@ public class SequenceService {
             }
         }
 
+           awardWonCash(allSequences,1,matchingIndex,availSeq);
+
         return listSeq;
 
         }catch (Exception e){
@@ -382,6 +388,26 @@ public class SequenceService {
     }
 
 
+    /**
+     * Computes the won award for all sequences that match
+     * @param allSequences Integer
+     * @param multiplier Integer
+     * @param matchingIndex Integer
+     * @param sumCounted Integer
+     */
+    public void awardWonCash(List<Sequence> allSequences,
+                             int multiplier,
+                             int matchingIndex,
+                             int sumCounted){
+
+        int awardedCash=sumCounted*multiplier;
+
+        allSequences.get(matchingIndex).setTag((long)awardedCash);
+
+        log.info("awarded----------->>>{}",allSequences.get(matchingIndex).getTag());
+
+
+    }
 
     /**
      * Find sequence by id
@@ -406,7 +432,6 @@ public class SequenceService {
         resp.put("Success","Removed sequence with id: "+id);
 
         return resp;
-
-
 }
+
 }
