@@ -3,7 +3,6 @@ package com.codelab.sequencechecker.service;
 import com.codelab.sequencechecker.exception.SequenceException;
 import com.codelab.sequencechecker.model.Sequence;
 import com.codelab.sequencechecker.repository.SeqCheckerRepository;
-import com.sun.jdi.LongValue;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -182,11 +181,16 @@ public class SequenceService {
 
         // Check if the sequence is empty
         if (sequence.isEmpty()) {
+
             log.error("Error occurred, unable to get 4 sequence: Empty input sequence");
+
             listSeq.add(new Sequence().setSequence("NoEntryFound!"));
+
             return listSeq;
         }
             int availSeq=0;
+            int matchingIndex = 0;
+
         for (int i = 0; i < allSequences.size(); i++) {
 
             if (!sequence.equals(allSequences.get(i).getSequence())) {// eliminate duplicated jackpot
@@ -195,11 +199,11 @@ public class SequenceService {
                         && allSequences.get(i).getSequence().substring(0, bound)
                         .equals(sequence.substring(0, bound))) {
 
-                    log.info("-----4--->>" + allSequences.get(i));
+                    log.info("-----4th--->>" + allSequences.get(i));
 
                     availSeq++;
 
-                    log.info("-4--->counted Sequences{}",availSeq);
+                    log.info("-4th--->counted Sequences{}",availSeq);
 
                     allSequences.get(i).setTag((long) availSeq);
 
@@ -207,8 +211,10 @@ public class SequenceService {
                 }
 
                 reverseAllSequences(allSequences, bound, i, sequence, listSeq);
+
                 removeDuplicates(listSeq);
 
+                sumAwardWon(allSequences,1,matchingIndex,availSeq);
             }
         }
 
@@ -217,7 +223,7 @@ public class SequenceService {
 
             listSeq.add(new Sequence().setSequence("CheckDataEntry!"));
 
-            log.info("CheckDataEntry-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=->"+sum);
+            log.info("CheckDataEntry-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=->"+sum);
 
             return listSeq;
         }
@@ -246,6 +252,7 @@ public class SequenceService {
         }
 
             int availSeq=0;
+            int matchingIndex = 0;
         for (int i = 0; i < allSequences.size(); i++) {
             if (!sequence.equals(allSequences.get(i).getSequence())) {
             if (allSequences.get(i).getSequence().length() >= bound
@@ -254,15 +261,16 @@ public class SequenceService {
 
                 log.info("-----3--->>" + allSequences.get(i));
                 availSeq++;
+                matchingIndex=i;
 
                 log.info("-3--->counted Sequences{}",availSeq);
                 allSequences.get(i).setTag((long) availSeq);
                 listSeq.add(allSequences.get(i));
 
-
             }
             reverseAllSequences(allSequences,bound,i,sequence,listSeq);
             removeDuplicates(listSeq);
+            sumAwardWon(allSequences,1,matchingIndex,availSeq);
         }
         }
 
@@ -296,6 +304,7 @@ public class SequenceService {
             return listSeq;
         }
             int availSeq=0;
+            int matchingIndex = 0;
         for (int i = 0; i < allSequences.size(); i++) {
 
             if (!sequence.equals(allSequences.get(i).getSequence())) {
@@ -304,15 +313,16 @@ public class SequenceService {
                         && allSequences.get(i).getSequence().substring(0, bound)
                         .equals(sequence.substring(0, bound))) {
 
+                    matchingIndex=i;
                     log.info("-----2--->>" + allSequences.get(i));
                     availSeq++;
-                    allSequences.get(i).setTag((long) availSeq);
                     log.info("-2--->counted Sequences {}",availSeq);
 
                     listSeq.add(allSequences.get(i));
                 }
                 removeDuplicates(listSeq);
                 reverseAllSequences(allSequences, bound, i, sequence, listSeq);
+                sumAwardWon(allSequences,1,matchingIndex,availSeq);
             }
         }
 
@@ -375,7 +385,7 @@ public class SequenceService {
             }
         }
 
-           awardWonCash(allSequences,1,matchingIndex,availSeq);
+           sumAwardWon(allSequences,1,matchingIndex,availSeq);
 
         return listSeq;
 
@@ -395,10 +405,10 @@ public class SequenceService {
      * @param matchingIndex Integer
      * @param sumCounted Integer
      */
-    public void awardWonCash(List<Sequence> allSequences,
-                             int multiplier,
-                             int matchingIndex,
-                             int sumCounted){
+    public void sumAwardWon(List<Sequence> allSequences,
+                            int multiplier,
+                            int matchingIndex,
+                            int sumCounted){
 
         int awardedCash=sumCounted*multiplier;
 
