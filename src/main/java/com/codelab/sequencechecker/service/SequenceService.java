@@ -82,14 +82,14 @@ public class SequenceService {
                 }
             }
 
-            log.info("---00->JackPot1===>> "+jackpot);
+            log.info("---00->JackPot===>> "+jackpot);
 
             return jackpot;
 
 
         }catch (Exception e){
 
-            return jackpot.setSequence("CheckDataEntry!");
+            return jackpot.setSequence("Check_Data_Entry!");
         }
 
     }
@@ -143,6 +143,7 @@ public class SequenceService {
                                                String sequence,
                                                List<Sequence> listSeq ){
         int availSeq=0;
+        int matchingIndex = 0;
 
         String retrievedSeqRev=reverseInputSeq(allSequences.get(index).getSequence());
         String seqRev=reverseInputSeq(sequence);
@@ -154,8 +155,9 @@ public class SequenceService {
                 && allSeqReversed.equals(inputRev)) {
 
             if(!sequence.equals(allSequences.get(index).getSequence())){
-                allSequences.get(index).setTag((long) availSeq);
+                sumAwardWon(allSequences,1,matchingIndex,availSeq);
             listSeq.add(allSequences.get(index));
+                removeDuplicates(listSeq);
 
 
 
