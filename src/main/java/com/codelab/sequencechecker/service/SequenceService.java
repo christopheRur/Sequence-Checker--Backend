@@ -125,7 +125,6 @@ public class SequenceService {
         List<Sequence> uniqueList = new ArrayList<>(uniqueSequences);
 
         return uniqueList;
-
     }
 
     /**
@@ -141,7 +140,7 @@ public class SequenceService {
                                                int bound,
                                                int index,
                                                String sequence,
-                                               List<Sequence> listSeq ){
+                                               List<Sequence> listSeq,int multiplier ){
         int availSeq=0;
         int matchingIndex = 0;
 
@@ -155,9 +154,12 @@ public class SequenceService {
                 && allSeqReversed.equals(inputRev)) {
 
             if(!sequence.equals(allSequences.get(index).getSequence())){
-                sumAwardWon(allSequences,1,matchingIndex,availSeq);
+
             listSeq.add(allSequences.get(index));
                 removeDuplicates(listSeq);
+
+                sumAwardWon(allSequences,multiplier,matchingIndex,availSeq);
+
 
 
 
@@ -211,10 +213,12 @@ public class SequenceService {
 
                     listSeq.add(allSequences.get(i));
                 }
+                int multiplier=300;
 
-                reverseAllSequences(allSequences, bound, i, sequence, listSeq);
+                reverseAllSequences(allSequences, bound, i, sequence, listSeq,multiplier);
 
                 removeDuplicates(listSeq);
+
 
                 sumAwardWon(allSequences,1,matchingIndex,availSeq);
             }
@@ -225,7 +229,7 @@ public class SequenceService {
 
             listSeq.add(new Sequence().setSequence("CheckDataEntry!"));
 
-            log.info("CheckDataEntry-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=->"+sum);
+            log.info("CheckDataEntry-=-=-=-=-=->"+sum);
 
             return listSeq;
         }
@@ -261,18 +265,20 @@ public class SequenceService {
                     && allSequences.get(i).getSequence().substring(0, bound)
                     .equals(sequence.substring(0, bound))) {
 
-                log.info("-----3--->>" + allSequences.get(i));
+                log.info("-----3rd--->>" + allSequences.get(i));
                 availSeq++;
                 matchingIndex=i;
 
-                log.info("-3--->counted Sequences{}",availSeq);
+                log.info("-3rd--->counted Sequences{}",availSeq);
                 allSequences.get(i).setTag((long) availSeq);
                 listSeq.add(allSequences.get(i));
 
             }
-            reverseAllSequences(allSequences,bound,i,sequence,listSeq);
+                int multiplier=10;
+            reverseAllSequences(allSequences,bound,i,sequence,listSeq,multiplier);
             removeDuplicates(listSeq);
-            sumAwardWon(allSequences,1,matchingIndex,availSeq);
+
+            sumAwardWon(allSequences,multiplier,matchingIndex,availSeq);
         }
         }
 
@@ -316,15 +322,19 @@ public class SequenceService {
                         .equals(sequence.substring(0, bound))) {
 
                     matchingIndex=i;
-                    log.info("-----2--->>" + allSequences.get(i));
+                    log.info("-----2nd--->>" + allSequences.get(i));
                     availSeq++;
-                    log.info("-2--->counted Sequences {}",availSeq);
+                    log.info("-2nd--->counted Sequences {}",availSeq);
 
                     listSeq.add(allSequences.get(i));
                 }
+                int multiplier=2;
                 removeDuplicates(listSeq);
-                reverseAllSequences(allSequences, bound, i, sequence, listSeq);
-                sumAwardWon(allSequences,1,matchingIndex,availSeq);
+
+                reverseAllSequences(allSequences, bound, i, sequence, listSeq,multiplier);
+
+                sumAwardWon(allSequences,multiplier,matchingIndex,availSeq);
+
             }
         }
 
@@ -380,14 +390,17 @@ public class SequenceService {
 
 
                 }
+                int multiplier=1;
 
-                reverseAllSequences(allSequences, bound, i, sequence, listSeq);
+                reverseAllSequences(allSequences, bound, i, sequence, listSeq,multiplier);
 
                 removeDuplicates(listSeq);
+                sumAwardWon(allSequences,multiplier,matchingIndex,availSeq);
             }
         }
 
-           sumAwardWon(allSequences,1,matchingIndex,availSeq);
+
+
 
         return listSeq;
 
