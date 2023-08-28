@@ -94,7 +94,6 @@ class SequenceCheckerApplicationTests {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-
     @Test
     public void testCheckSequenceSeries4() {
 

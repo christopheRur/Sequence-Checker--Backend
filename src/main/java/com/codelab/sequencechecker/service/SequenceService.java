@@ -22,72 +22,75 @@ public class SequenceService {
     @Autowired
     private SeqCheckerRepository seqRep;
 
-    public SequenceService(SeqCheckerRepository seqChecker){
-        this.seqRep= seqChecker;
+    public SequenceService(SeqCheckerRepository seqChecker) {
+        this.seqRep = seqChecker;
     }
 
 
     /**
      * Add sequences in db
+     *
      * @param seq
      * @return sequence
      */
-    public Sequence addSequence(Sequence seq){
+    public Sequence addSequence(Sequence seq) {
 
         return seqRep.save(seq);
     }
 
     /**
      * Retrieve all sequences from db
+     *
      * @return List
      */
-    public List<Sequence> getAllSequences(){
+    public List<Sequence> getAllSequences() {
 
         return seqRep.findAll();
     }
 
     /**
      * Retrieve the jackpot number
+     *
      * @param sequence Sequence
      * @return
      */
 
-    public Sequence jackPot(String sequence){
-        Sequence jackpot=null;
+    public Sequence jackPot(String sequence) {
+        Sequence jackpot = null;
 
-        try{
+        try {
 
             // Check if the sequence is empty
             if (sequence.isEmpty()) {
                 log.error("Error occurred, unable to get sequences: Empty input sequence");
-                jackpot= new Sequence().setSequence("NoEntryFound!");
+                jackpot = new Sequence().setSequence("NoEntryFound!");
                 return jackpot;
             }
 
-            int sizeOfSeq=getAllSequences().size();
+            int sizeOfSeq = getAllSequences().size();
 
-            int availSeq=0;
-            for(int i=0; i < sizeOfSeq; i++){
+            int availSeq = 0;
+            for (int i = 0; i < sizeOfSeq; i++) {
 
-                if( getAllSequences().get(i).getSequence().equals(sequence)){
+                if (getAllSequences().get(i).getSequence().equals(sequence)) {
 
-                    log.info("JackPot1===> -----> "+getAllSequences().get(i).getSequence());
+                    log.info("JackPot1===> -----> " + getAllSequences().get(i).getSequence());
                     getAllSequences().get(i).setTag((long) availSeq);
 
-                    jackpot=new Sequence().setSequence(sequence);
+                    jackpot = new Sequence().setSequence(sequence);
 
                     break;
-                }
-                else { jackpot=new Sequence().setSequence("Missing JP#!");
+                } else {
+                    jackpot = new Sequence().setSequence("Missing JP#!");
                 }
             }
 
-            log.info("---00->JackPot===>> "+jackpot);
+            log.info("---00->JackPot===>> " + jackpot);
 
             return jackpot;
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
 
             return jackpot.setSequence("Check_Data_Entry!");
         }
@@ -96,10 +99,11 @@ public class SequenceService {
 
     /**
      * Reverse a sequence
+     *
      * @param sequence String
      * @return String
      */
-    private String reverseInputSeq(String sequence){
+    private String reverseInputSeq(String sequence) {
 
         StringBuilder reversedSeq = new StringBuilder();
 
@@ -115,12 +119,13 @@ public class SequenceService {
 
     /**
      * Eliminate duplicates
+     *
      * @param listSeq List<Sequence>
      * @return List<Sequence>
      */
     private List<Sequence> removeDuplicates(List<Sequence> listSeq) {
 
-        Set<Sequence> uniqueSequences=new HashSet<>(listSeq);
+        Set<Sequence> uniqueSequences = new HashSet<>(listSeq);
 
         List<Sequence> uniqueList = new ArrayList<>(uniqueSequences);
 
@@ -129,6 +134,7 @@ public class SequenceService {
 
     /**
      * Reverses input sequence passed here and compare it with db sequences
+     *
      * @param allSequences
      * @param bound
      * @param index
@@ -140,28 +146,25 @@ public class SequenceService {
                                                int bound,
                                                int index,
                                                String sequence,
-                                               List<Sequence> listSeq,int multiplier ){
-        int availSeq=0;
+                                               List<Sequence> listSeq, int multiplier) {
+        int availSeq = 0;
         int matchingIndex = 0;
 
-        String retrievedSeqRev=reverseInputSeq(allSequences.get(index).getSequence());
-        String seqRev=reverseInputSeq(sequence);
+        String retrievedSeqRev = reverseInputSeq(allSequences.get(index).getSequence());
+        String seqRev = reverseInputSeq(sequence);
 
-        String allSeqReversed=retrievedSeqRev.substring(0, bound);
-        String inputRev=seqRev.substring(0, bound);
+        String allSeqReversed = retrievedSeqRev.substring(0, bound);
+        String inputRev = seqRev.substring(0, bound);
 
         if (allSequences.get(index).getSequence().length() >= bound
                 && allSeqReversed.equals(inputRev)) {
 
-            if(!sequence.equals(allSequences.get(index).getSequence())){
+            if (!sequence.equals(allSequences.get(index).getSequence())) {
 
-            listSeq.add(allSequences.get(index));
+                listSeq.add(allSequences.get(index));
                 removeDuplicates(listSeq);
 
-                sumAwardWon(allSequences,multiplier,matchingIndex,availSeq);
-
-
-
+                sumAwardWon(allSequences, multiplier, matchingIndex, availSeq);
 
             }
         }
@@ -171,65 +174,66 @@ public class SequenceService {
 
     /**
      * Checks if passed in string matches in
+     *
      * @param sequence Sequence
      * @return List<Sequence>
      */
     public List<Sequence> check4Sequence(String sequence) {
         List<Sequence> listSeq = new ArrayList<>();
 
-        int sum =0;
+        int sum = 0;
 
-        try{
-        List<Sequence> allSequences = getAllSequences();
-        int bound = 8;
+        try {
+            List<Sequence> allSequences = getAllSequences();
+            int bound = 8;
 
-        // Check if the sequence is empty
-        if (sequence.isEmpty()) {
+            // Check if the sequence is empty
+            if (sequence.isEmpty()) {
 
-            log.error("Error occurred, unable to get 4 sequence: Empty input sequence");
+                log.error("Error occurred, unable to get 4 sequence: Empty input sequence");
 
-            listSeq.add(new Sequence().setSequence("NoEntryFound!"));
+                listSeq.add(new Sequence().setSequence("NoEntryFound!"));
 
-            return listSeq;
-        }
-            int availSeq=0;
+                return listSeq;
+            }
+            int availSeq = 0;
             int matchingIndex = 0;
 
-        for (int i = 0; i < allSequences.size(); i++) {
+            for (int i = 0; i < allSequences.size(); i++) {
 
-            if (!sequence.equals(allSequences.get(i).getSequence())) {// eliminate duplicated jackpot
+                if (!sequence.equals(allSequences.get(i).getSequence())) {// eliminate duplicated jackpot
 
-                if (allSequences.get(i).getSequence().length() >= bound
-                        && allSequences.get(i).getSequence().substring(0, bound)
-                        .equals(sequence.substring(0, bound))) {
+                    if (allSequences.get(i).getSequence().length() >= bound
+                            && allSequences.get(i).getSequence().substring(0, bound)
+                            .equals(sequence.substring(0, bound))) {
 
-                    log.info("-----4th--->>" + allSequences.get(i));
+                        log.info("-----4th--->>" + allSequences.get(i));
 
-                    availSeq++;
+                        availSeq++;
 
-                    log.info("-4th--->counted Sequences{}",availSeq);
+                        log.info("-4th--->counted Sequences{}", availSeq);
 
-                    allSequences.get(i).setTag((long) availSeq);
+                        allSequences.get(i).setTag((long) availSeq);
 
-                    listSeq.add(allSequences.get(i));
+                        listSeq.add(allSequences.get(i));
+                    }
+                    int multiplier = 300;
+
+                    reverseAllSequences(allSequences, bound, i, sequence, listSeq, multiplier);
+
+                    removeDuplicates(listSeq);
+
+
+                    sumAwardWon(allSequences, 1, matchingIndex, availSeq);
                 }
-                int multiplier=300;
-
-                reverseAllSequences(allSequences, bound, i, sequence, listSeq,multiplier);
-
-                removeDuplicates(listSeq);
-
-
-                sumAwardWon(allSequences,1,matchingIndex,availSeq);
             }
-        }
 
-        return listSeq;
-        }catch (Exception e){
+            return listSeq;
+        } catch (Exception e) {
 
             listSeq.add(new Sequence().setSequence("CheckDataEntry!"));
 
-            log.info("CheckDataEntry-=-=-=-=-=->"+sum);
+            log.info("CheckDataEntry-=-=-=-=-=->" + sum);
 
             return listSeq;
         }
@@ -238,109 +242,111 @@ public class SequenceService {
 
     /**
      * Checks 3 sequence
+     *
      * @param sequence
      * @return List<Sequence>
      */
-    public List<Sequence> check3Sequence(String sequence){
+    public List<Sequence> check3Sequence(String sequence) {
 
         List<Sequence> listSeq = new ArrayList<>();
 
 
-        try{
-        List<Sequence> allSequences = getAllSequences();
-        int bound = 6;
+        try {
+            List<Sequence> allSequences = getAllSequences();
+            int bound = 6;
 
-        // Check if the sequence is empty
-        if (sequence.isEmpty()) {
-            log.error("Error occurred, unable to get 3 sequence: Empty input sequence");
-            listSeq.add(new Sequence().setSequence("NoEntryFound!"));
+            // Check if the sequence is empty
+            if (sequence.isEmpty()) {
+                log.error("Error occurred, unable to get 3 sequence: Empty input sequence");
+                listSeq.add(new Sequence().setSequence("NoEntryFound!"));
+                return listSeq;
+            }
+
+            int availSeq = 0;
+            int matchingIndex = 0;
+            for (int i = 0; i < allSequences.size(); i++) {
+                if (!sequence.equals(allSequences.get(i).getSequence())) {
+                    if (allSequences.get(i).getSequence().length() >= bound
+                            && allSequences.get(i).getSequence().substring(0, bound)
+                            .equals(sequence.substring(0, bound))) {
+
+                        log.info("-----3rd--->>" + allSequences.get(i));
+                        availSeq++;
+                        matchingIndex = i;
+
+                        log.info("-3rd--->counted Sequences{}", availSeq);
+                        allSequences.get(i).setTag((long) availSeq);
+                        listSeq.add(allSequences.get(i));
+
+                    }
+                    int multiplier = 10;
+                    reverseAllSequences(allSequences, bound, i, sequence, listSeq, multiplier);
+                    removeDuplicates(listSeq);
+
+                    sumAwardWon(allSequences, multiplier, matchingIndex, availSeq);
+                }
+            }
+
+            return listSeq;
+        } catch (Exception e) {
+
+            listSeq.add(new Sequence().setSequence("CheckDataEntry!"));
+
             return listSeq;
         }
-
-            int availSeq=0;
-            int matchingIndex = 0;
-        for (int i = 0; i < allSequences.size(); i++) {
-            if (!sequence.equals(allSequences.get(i).getSequence())) {
-            if (allSequences.get(i).getSequence().length() >= bound
-                    && allSequences.get(i).getSequence().substring(0, bound)
-                    .equals(sequence.substring(0, bound))) {
-
-                log.info("-----3rd--->>" + allSequences.get(i));
-                availSeq++;
-                matchingIndex=i;
-
-                log.info("-3rd--->counted Sequences{}",availSeq);
-                allSequences.get(i).setTag((long) availSeq);
-                listSeq.add(allSequences.get(i));
-
-            }
-                int multiplier=10;
-            reverseAllSequences(allSequences,bound,i,sequence,listSeq,multiplier);
-            removeDuplicates(listSeq);
-
-            sumAwardWon(allSequences,multiplier,matchingIndex,availSeq);
-        }
-        }
-
-        return listSeq;
-    }catch (Exception e){
-
-        listSeq.add(new Sequence().setSequence("CheckDataEntry!"));
-
-        return listSeq;
-    }
     }
 
     /**
      * Checks 2 sequence
+     *
      * @param sequence
      * @return List<Sequence>
      */
-    public List<Sequence> check2Sequence(String sequence){
+    public List<Sequence> check2Sequence(String sequence) {
 
         List<Sequence> listSeq = new ArrayList<>();
 
-        try{
+        try {
 
-        List<Sequence> allSequences = getAllSequences();
-        int bound = 4;
+            List<Sequence> allSequences = getAllSequences();
+            int bound = 4;
 
-        // Check if the sequence is empty
-        if (sequence.isEmpty()) {
-            log.error("Error occurred, unable to get 2 sequence: Empty input sequence");
-            listSeq.add(new Sequence().setSequence("NoEntryFound!"));
-            return listSeq;
-        }
-            int availSeq=0;
-            int matchingIndex = 0;
-        for (int i = 0; i < allSequences.size(); i++) {
-
-            if (!sequence.equals(allSequences.get(i).getSequence())) {
-
-                if (allSequences.get(i).getSequence().length() >= bound
-                        && allSequences.get(i).getSequence().substring(0, bound)
-                        .equals(sequence.substring(0, bound))) {
-
-                    matchingIndex=i;
-                    log.info("-----2nd--->>" + allSequences.get(i));
-                    availSeq++;
-                    log.info("-2nd--->counted Sequences {}",availSeq);
-
-                    listSeq.add(allSequences.get(i));
-                }
-                int multiplier=2;
-                removeDuplicates(listSeq);
-
-                reverseAllSequences(allSequences, bound, i, sequence, listSeq,multiplier);
-
-                sumAwardWon(allSequences,multiplier,matchingIndex,availSeq);
-
+            // Check if the sequence is empty
+            if (sequence.isEmpty()) {
+                log.error("Error occurred, unable to get 2 sequence: Empty input sequence");
+                listSeq.add(new Sequence().setSequence("NoEntryFound!"));
+                return listSeq;
             }
-        }
+            int availSeq = 0;
+            int matchingIndex = 0;
+            for (int i = 0; i < allSequences.size(); i++) {
 
-        return listSeq;
+                if (!sequence.equals(allSequences.get(i).getSequence())) {
 
-        }catch (Exception e){
+                    if (allSequences.get(i).getSequence().length() >= bound
+                            && allSequences.get(i).getSequence().substring(0, bound)
+                            .equals(sequence.substring(0, bound))) {
+
+                        matchingIndex = i;
+                        log.info("-----2nd--->>" + allSequences.get(i));
+                        availSeq++;
+                        log.info("-2nd--->counted Sequences {}", availSeq);
+
+                        listSeq.add(allSequences.get(i));
+                    }
+                    int multiplier = 2;
+                    removeDuplicates(listSeq);
+
+                    reverseAllSequences(allSequences, bound, i, sequence, listSeq, multiplier);
+
+                    sumAwardWon(allSequences, multiplier, matchingIndex, availSeq);
+
+                }
+            }
+
+            return listSeq;
+
+        } catch (Exception e) {
 
             listSeq.add(new Sequence().setSequence("CheckDataEntry!"));
 
@@ -350,61 +356,60 @@ public class SequenceService {
 
     /**
      * Checks the 1st character in sequence
+     *
      * @param sequence
      * @return List<Sequence>
      */
-    public List<Sequence> check1Sequence(String sequence){
+    public List<Sequence> check1Sequence(String sequence) {
 
         List<Sequence> listSeq = new ArrayList<>();
 
-        try{
-        List<Sequence> allSequences = getAllSequences();
-        int bound = 2;
+        try {
+            List<Sequence> allSequences = getAllSequences();
+            int bound = 2;
 
-        // Check if the sequence is empty
-        if (sequence.isEmpty()) {
-            log.error("Error occurred, unable to get 1 sequence: Empty input sequence");
-            listSeq.add(new Sequence().setSequence("NoEntryFound!"));
-            return listSeq;
-        }
-
-            int availSeq=0;
-            int matchingIndex = 0;
-        for (int i = 0; i < allSequences.size(); i++) {
-
-
-            if (!sequence.equals(allSequences.get(i).getSequence())) {
-
-                if (allSequences.get(i).getSequence().length() >= bound
-                        && allSequences.get(i).getSequence().substring(0, bound)
-                        .equals(sequence.substring(0, bound))) {
-
-                    matchingIndex=i;
-
-                    log.info("-----1st--->>" + allSequences.get(i));
-                    availSeq++;
-
-                    log.info("-1--->counted Sequences {}",availSeq);
-
-                    listSeq.add(allSequences.get(i));
-
-
-                }
-                int multiplier=1;
-
-                reverseAllSequences(allSequences, bound, i, sequence, listSeq,multiplier);
-
-                removeDuplicates(listSeq);
-                sumAwardWon(allSequences,multiplier,matchingIndex,availSeq);
+            // Check if the sequence is empty
+            if (sequence.isEmpty()) {
+                log.error("Error occurred, unable to get 1 sequence: Empty input sequence");
+                listSeq.add(new Sequence().setSequence("NoEntryFound!"));
+                return listSeq;
             }
-        }
+
+            int availSeq = 0;
+            int matchingIndex = 0;
+            for (int i = 0; i < allSequences.size(); i++) {
 
 
+                if (!sequence.equals(allSequences.get(i).getSequence())) {
+
+                    if (allSequences.get(i).getSequence().length() >= bound
+                            && allSequences.get(i).getSequence().substring(0, bound)
+                            .equals(sequence.substring(0, bound))) {
+
+                        matchingIndex = i;
+
+                        log.info("-----1st--->>" + allSequences.get(i));
+                        availSeq++;
+
+                        log.info("-1--->counted Sequences {}", availSeq);
+
+                        listSeq.add(allSequences.get(i));
 
 
-        return listSeq;
+                    }
+                    int multiplier = 1;
 
-        }catch (Exception e){
+                    reverseAllSequences(allSequences, bound, i, sequence, listSeq, multiplier);
+
+                    removeDuplicates(listSeq);
+                    sumAwardWon(allSequences, multiplier, matchingIndex, availSeq);
+                }
+            }
+
+
+            return listSeq;
+
+        } catch (Exception e) {
 
             listSeq.add(new Sequence().setSequence("CheckDataEntry!"));
 
@@ -415,48 +420,51 @@ public class SequenceService {
 
     /**
      * Computes the won award for all sequences that match
-     * @param allSequences Integer
-     * @param multiplier Integer
+     *
+     * @param allSequences  Integer
+     * @param multiplier    Integer
      * @param matchingIndex Integer
-     * @param sumCounted Integer
+     * @param sumCounted    Integer
      */
     public void sumAwardWon(List<Sequence> allSequences,
                             int multiplier,
                             int matchingIndex,
-                            int sumCounted){
+                            int sumCounted) {
 
-        int awardedCash=sumCounted*multiplier;
+        int awardedCash = sumCounted * multiplier;
 
-        allSequences.get(matchingIndex).setTag((long)awardedCash);
+        allSequences.get(matchingIndex).setTag((long) awardedCash);
 
-        log.info("awarded----------->>>{}",allSequences.get(matchingIndex).getTag());
+        log.info("awarded----------->>>{}", allSequences.get(matchingIndex).getTag());
 
 
     }
 
     /**
      * Find sequence by id
+     *
      * @param id
      * @return Sequence
      */
-    public Sequence findSequenceById(Long id){
+    public Sequence findSequenceById(Long id) {
         return seqRep.findById(id).orElseThrow(
-                ()->new SequenceException("The specified id: "+id+" not found!"));
+                () -> new SequenceException("The specified id: " + id + " not found!"));
     }
 
     /**
      * Delete Sequence by id
+     *
      * @param id
      * @return
      */
-    public JSONObject deleteSequenceById(Long id){
-        Sequence seq= findSequenceById(id);
+    public JSONObject deleteSequenceById(Long id) {
+        Sequence seq = findSequenceById(id);
         seqRep.delete(seq);
 
-        JSONObject resp= new JSONObject();
-        resp.put("Success","Removed sequence with id: "+id);
+        JSONObject resp = new JSONObject();
+        resp.put("Success", "Removed sequence with id: " + id);
 
         return resp;
-}
+    }
 
 }
